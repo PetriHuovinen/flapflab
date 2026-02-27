@@ -6,8 +6,8 @@ const scoreDisplay = document.getElementById('score');
 const finalScoreDisplay = document.getElementById('finalScore');
 
 // Set canvas size
-canvas.width = 400;
-canvas.height = 600;
+canvas.width = 600;
+canvas.height = 900;
 
 // Game constants
 const GRAVITY = 0.15;

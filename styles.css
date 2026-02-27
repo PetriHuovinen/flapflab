@@ -21,8 +21,8 @@ body {
 
 .game-container {
     position: relative;
-    width: 400px;
-    height: 600px;
+    width: 600px;
+    height: 900px;
     background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
     border: 3px solid #333;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);

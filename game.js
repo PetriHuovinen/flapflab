@@ -13,7 +13,7 @@ canvas.height = 900;
 const GRAVITY = 0.15;
 const FLAP_POWER = -5;
 const PIPE_WIDTH = 60;
-const PIPE_GAP = 120;
+const PIPE_GAP = 240;
 const PIPE_SPEED = -2.5;
 const PIPE_SPAWN_RATE = 90; // pixels between pipes
 

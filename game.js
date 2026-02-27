@@ -10,11 +10,11 @@ canvas.width = 400;
 canvas.height = 600;
 
 // Game constants
-const GRAVITY = 0.6;
-const FLAP_POWER = -12;
+const GRAVITY = 0.15;
+const FLAP_POWER = -8;
 const PIPE_WIDTH = 60;
 const PIPE_GAP = 120;
-const PIPE_SPEED = -4;
+const PIPE_SPEED = -2.5;
 const PIPE_SPAWN_RATE = 90; // pixels between pipes
 
 // Bird object

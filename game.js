@@ -132,7 +132,8 @@ function purchaseFlapPower(packageId) {
 function addBonusBalance(amount) {
     playerBalance += amount;
     savePlayerData();
- 
+    updateDisplays();
+}
 
 // Open payment modal
 function openPaymentModal(packageId) {
@@ -223,7 +224,6 @@ async function handlePayment(e) {
         submitPaymentBtn.disabled = false;
         document.getElementById('payment-processing').style.display = 'none';
     }
-}   updateDisplays();
 }
 
 // Input handling
@@ -349,22 +349,9 @@ function drawBird() {
     ctx.arc(bird.x + bird.width / 2 + 6, bird.y + bird.height / 2 - 3, 3, 0, Math.PI * 2);
     ctx.fill();
 
-   Initialize modal event listeners
-function initializeModal() {
-    closeModal.addEventListener('click', closePaymentModal);
-    paymentModal.addEventListener('click', (e) => {
-        if (e.target === paymentModal) {
-            closePaymentModal();
-        }
-    });
-    paymentForm.addEventListener('submit', handlePayment);
-}
-
-// Start the game
-initStripe();
-loadPlayerData();
-initializeShop();
-initializeModalath();
+    // Draw beak
+    ctx.fillStyle = '#FF6B6B';
+    ctx.beginPath();
     ctx.moveTo(bird.x + bird.width, bird.y + bird.height / 2);
     ctx.lineTo(bird.x + bird.width + 8, bird.y + bird.height / 2 - 2);
     ctx.lineTo(bird.x + bird.width + 8, bird.y + bird.height / 2 + 2);
@@ -452,6 +439,17 @@ function initializeShop() {
             purchaseFlapPower(packageId);
         });
     });
+}
+
+// Initialize modal event listeners
+function initializeModal() {
+    closeModal.addEventListener('click', closePaymentModal);
+    paymentModal.addEventListener('click', (e) => {
+        if (e.target === paymentModal) {
+            closePaymentModal();
+        }
+    });
+    paymentForm.addEventListener('submit', handlePayment);
 }
 
 // Start the game

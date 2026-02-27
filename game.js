@@ -414,7 +414,6 @@ function awardMilestoneBonus(currentScore) {
         if (currentScore === milestone) {
             const bonus = milestone * 5;
             addBonusBalance(bonus);
-            alert(`Milestone reached! +$${bonus} bonus!`);
             break;
         }
     }

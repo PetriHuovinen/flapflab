@@ -188,9 +188,14 @@ async function handlePayment(e) {
             })
         });
         
+        if (!intentResponse.ok) {
+            const errorData = await intentResponse.json();
+            throw new Error(errorData.error || `HTTP ${intentResponse.status}`);
+        }
+        
         const { clientSecret, success } = await intentResponse.json();
         
-        if (!success) {
+        if (!success || !clientSecret) {
             throw new Error('Failed to create payment intent');
         }
         

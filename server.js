@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Log startup info
 console.log('Starting Flappy Bird Game Server...');
-console.log(`Stripe configured: ${!!process.env.STRIPE_SECRET_KEY}`);
+console.log(`Stripe Secret Key configured: ${process.env.STRIPE_SECRET_KEY ? `Yes (${process.env.STRIPE_SECRET_KEY.substring(0, 10)}...)` : 'NO - SET STRIPE_SECRET_KEY'}`);
 console.log(`Port: ${PORT}`);
 
 // Middleware - order matters!
@@ -47,8 +47,17 @@ app.post('/create-payment-intent', async (req, res) => {
             success: true
         });
     } catch (error) {
-        console.error('Error creating payment intent:', error.message);
-        res.status(500).json({ error: error.message });
+        console.error('Error creating payment intent:');
+        console.error(`  Message: ${error.message}`);
+        console.error(`  Type: ${error.type}`);
+        if (error.code) console.error(`  Code: ${error.code}`);
+        
+        // Return meaningful error to client
+        const errorMessage = error.message.includes('Invalid API Key') 
+            ? 'Invalid Stripe API key. Please configure STRIPE_SECRET_KEY in .env'
+            : error.message;
+        
+        res.status(500).json({ error: errorMessage });
     }
 });
 

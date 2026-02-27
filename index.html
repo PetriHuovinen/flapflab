@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flappy Bird Clone</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <div class="container">
@@ -16,19 +17,23 @@
                 <div class="packages">
                     <button class="shop-btn" data-package-id="1">
                         <span class="pkg-name">+10% Flap</span>
-                        <span class="pkg-price">$99</span>
+                        <span class="pkg-price">$0.99</span>
+                        <span class="pkg-btn-text">Buy</span>
                     </button>
                     <button class="shop-btn" data-package-id="2">
                         <span class="pkg-name">+25% Flap</span>
-                        <span class="pkg-price">$199</span>
+                        <span class="pkg-price">$1.99</span>
+                        <span class="pkg-btn-text">Buy</span>
                     </button>
                     <button class="shop-btn" data-package-id="3">
                         <span class="pkg-name">+50% Flap</span>
-                        <span class="pkg-price">$399</span>
+                        <span class="pkg-price">$3.99</span>
+                        <span class="pkg-btn-text">Buy</span>
                     </button>
                     <button class="shop-btn" data-package-id="4">
                         <span class="pkg-name">Double Flap</span>
-                        <span class="pkg-price">$799</span>
+                        <span class="pkg-price">$7.99</span>
+                        <span class="pkg-btn-text">Buy</span>
                     </button>
                 </div>
                 <div class="bonus-section">
@@ -51,6 +56,26 @@
                     <button onclick="location.reload()">Play Again</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Stripe Payment Modal -->
+    <div id="paymentModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Complete Purchase</h2>
+            <div class="payment-info">
+                <p>Package: <strong id="paymentPackageName"></strong></p>
+                <p>Price: <strong id="paymentAmount"></strong></p>
+            </div>
+            <form id="payment-form">
+                <div id="card-element" class="card-element"></div>
+                <div id="card-errors" role="alert" class="error-message"></div>
+                <div id="payment-processing" style="display: none;" class="processing-message">
+                    Processing payment...
+                </div>
+                <button type="submit" id="submit-payment" class="pay-button">Pay with Card</button>
+            </form>
         </div>
     </div>
     <script src="game.js"></script>

@@ -211,3 +211,148 @@ canvas {
 .bonus-section li {
     margin-left: 10px;
 }
+/* Payment Modal */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+.modal-content h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.payment-info {
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.payment-info p {
+    margin: 8px 0;
+    color: #333;
+}
+
+#card-element {
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: white;
+    font-size: 16px;
+}
+
+.StripeElement {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+    border-color: #667eea;
+}
+
+.StripeElement--invalid {
+    border-color: #fa755a;
+}
+
+#card-errors {
+    margin-bottom: 15px;
+    min-height: 20px;
+}
+
+.error-message {
+    color: #fa755a;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.processing-message {
+    color: #667eea;
+    text-align: center;
+    font-weight: bold;
+    padding: 15px;
+    background: #f0f4ff;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.pay-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pay-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.pay-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.success-message {
+    color: #28a745;
+    text-align: center;
+    padding: 15px;
+    background: #d4edda;
+    border-radius: 8px;
+    font-weight: bold;
+}

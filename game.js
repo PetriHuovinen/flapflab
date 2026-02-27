@@ -8,6 +8,41 @@ const shopDisplay = document.getElementById('shopDisplay');
 const balanceDisplay = document.getElementById('balanceDisplay');
 const flapPowerDisplay = document.getElementById('flapPowerDisplay');
 
+// Stripe elements
+const paymentModal = document.getElementById('paymentModal');
+const closeModal = document.querySelector('.close-modal');
+const paymentForm = document.getElementById('payment-form');
+const submitPaymentBtn = document.getElementById('submit-payment');
+const cardErrors = document.getElementById('card-errors');
+
+let stripe;
+let elements;
+let cardElement;
+
+// Initialize Stripe
+async function initStripe() {
+    try {
+        const response = await fetch('/config');
+        const { publishableKey } = await response.json();
+        
+        stripe = Stripe(publishableKey);
+        elements = stripe.elements();
+        cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+        
+        // Handle card errors
+        cardElement.addEventListener('change', (event) => {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+            } else {
+                cardErrors.textContent = '';
+            }
+        });
+    } catch (error) {
+        console.error('Error initializing Stripe:', error);
+    }
+}
+
 // Set canvas size
 canvas.width = 600;
 canvas.height = 900;
@@ -22,10 +57,10 @@ const PIPE_SPAWN_RATE = 90; // pixels between pipes
 
 // Purchase system constants
 const FLAP_POWER_PACKAGES = [
-    { id: 1, name: '+10% Flap', multiplier: 1.1, price: 99 },
-    { id: 2, name: '+25% Flap', multiplier: 1.25, price: 199 },
-    { id: 3, name: '+50% Flap', multiplier: 1.5, price: 399 },
-    { id: 4, name: 'Double Flap', multiplier: 2.0, price: 799 }
+    { id: 1, name: '+10% Flap', multiplier: 1.1, freeCost: 99, realCost: 99 },
+    { id: 2, name: '+25% Flap', multiplier: 1.25, freeCost: 199, realCost: 199 },
+    { id: 3, name: '+50% Flap', multiplier: 1.5, freeCost: 399, realCost: 399 },
+    { id: 4, name: 'Double Flap', multiplier: 2.0, freeCost: 799, realCost: 799 }
 ];
 const STARTING_BALANCE = 500; // Free currency to start
 
@@ -79,24 +114,116 @@ function purchaseFlapPower(packageId) {
     const pkg = FLAP_POWER_PACKAGES.find(p => p.id === packageId);
     if (!pkg) return;
     
-    if (playerBalance < pkg.price) {
-        alert('Insufficient balance! You need $' + (pkg.price - playerBalance) + ' more.');
-        return;
+    if (playerBalance >= pkg.freeCost) {
+        // Use free currency
+        playerBalance -= pkg.freeCost;
+        purchasedFlapMultiplier = pkg.multiplier;
+        bird.flapMultiplier = purchasedFlapMultiplier;
+        savePlayerData();
+        updateDisplays();
+        alert('Purchased: ' + pkg.name + '!');
+    } else {
+        // Open payment modal for real money
+        openPaymentModal(packageId);
     }
-    
-    playerBalance -= pkg.price;
-    purchasedFlapMultiplier = pkg.multiplier;
-    bird.flapMultiplier = purchasedFlapMultiplier;
-    savePlayerData();
-    updateDisplays();
-    alert('Purchased: ' + pkg.name + '!');
 }
 
 // Add free bonus currency
 function addBonusBalance(amount) {
     playerBalance += amount;
     savePlayerData();
-    updateDisplays();
+ 
+
+// Open payment modal
+function openPaymentModal(packageId) {
+    const pkg = FLAP_POWER_PACKAGES.find(p => p.id === packageId);
+    if (!pkg) return;
+    
+    // Store the package ID for use in payment submission
+    paymentForm.dataset.packageId = packageId;
+    
+    // Update modal with package info
+    document.getElementById('paymentPackageName').textContent = pkg.name;
+    document.getElementById('paymentAmount').textContent = '$' + (pkg.realCost / 100).toFixed(2);
+    
+    // Reset form
+    cardElement.clear();
+    cardErrors.textContent = '';
+    paymentModal.classList.remove('hidden');
+}
+
+// Close payment modal
+function closePaymentModal() {
+    paymentModal.classList.add('hidden');
+    cardElement.clear();
+    cardErrors.textContent = '';
+}
+
+// Handle payment submission
+async function handlePayment(e) {
+    e.preventDefault();
+    
+    if (!stripe || !cardElement) {
+        cardErrors.textContent = 'Payment system not initialized';
+        return;
+    }
+    
+    const packageId = parseInt(paymentForm.dataset.packageId);
+    const pkg = FLAP_POWER_PACKAGES.find(p => p.id === packageId);
+    if (!pkg) return;
+    
+    // Disable button and show processing
+    submitPaymentBtn.disabled = true;
+    document.getElementById('payment-processing').style.display = 'block';
+    
+    try {
+        // Create payment intent on the backend
+        const intentResponse = await fetch('/create-payment-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: pkg.realCost,
+                packageId: packageId
+            })
+        });
+        
+        const { clientSecret, success } = await intentResponse.json();
+        
+        if (!success) {
+            throw new Error('Failed to create payment intent');
+        }
+        
+        // Confirm payment with Stripe
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {}
+            }
+        });
+        
+        if (error) {
+            cardErrors.textContent = error.message;
+            submitPaymentBtn.disabled = false;
+            document.getElementById('payment-processing').style.display = 'none';
+        } else if (paymentIntent.status === 'succeeded') {
+            // Payment successful
+            purchasedFlapMultiplier = pkg.multiplier;
+            bird.flapMultiplier = purchasedFlapMultiplier;
+            savePlayerData();
+            updateDisplays();
+            
+            alert('Payment successful! Purchased: ' + pkg.name);
+            closePaymentModal();
+            submitPaymentBtn.disabled = false;
+            document.getElementById('payment-processing').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        cardErrors.textContent = 'Payment failed: ' + error.message;
+        submitPaymentBtn.disabled = false;
+        document.getElementById('payment-processing').style.display = 'none';
+    }
+}   updateDisplays();
 }
 
 // Input handling
@@ -222,9 +349,22 @@ function drawBird() {
     ctx.arc(bird.x + bird.width / 2 + 6, bird.y + bird.height / 2 - 3, 3, 0, Math.PI * 2);
     ctx.fill();
 
-    // Draw beak
-    ctx.fillStyle = '#FF6B6B';
-    ctx.beginPath();
+   Initialize modal event listeners
+function initializeModal() {
+    closeModal.addEventListener('click', closePaymentModal);
+    paymentModal.addEventListener('click', (e) => {
+        if (e.target === paymentModal) {
+            closePaymentModal();
+        }
+    });
+    paymentForm.addEventListener('submit', handlePayment);
+}
+
+// Start the game
+initStripe();
+loadPlayerData();
+initializeShop();
+initializeModalath();
     ctx.moveTo(bird.x + bird.width, bird.y + bird.height / 2);
     ctx.lineTo(bird.x + bird.width + 8, bird.y + bird.height / 2 - 2);
     ctx.lineTo(bird.x + bird.width + 8, bird.y + bird.height / 2 + 2);
@@ -315,6 +455,8 @@ function initializeShop() {
 }
 
 // Start the game
+initStripe();
 loadPlayerData();
 initializeShop();
+initializeModal();
 gameLoop();

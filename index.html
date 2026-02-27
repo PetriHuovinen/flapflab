@@ -8,6 +8,39 @@
 </head>
 <body>
     <div class="container">
+        <div class="sidebar">
+            <div class="shop-panel">
+                <h2>⚡ Power Shop</h2>
+                <div id="balanceDisplay" class="balance">$ 500</div>
+                <div id="flapPowerDisplay" class="flap-power">Flap Power: 100%</div>
+                <div class="packages">
+                    <button class="shop-btn" data-package-id="1">
+                        <span class="pkg-name">+10% Flap</span>
+                        <span class="pkg-price">$99</span>
+                    </button>
+                    <button class="shop-btn" data-package-id="2">
+                        <span class="pkg-name">+25% Flap</span>
+                        <span class="pkg-price">$199</span>
+                    </button>
+                    <button class="shop-btn" data-package-id="3">
+                        <span class="pkg-name">+50% Flap</span>
+                        <span class="pkg-price">$399</span>
+                    </button>
+                    <button class="shop-btn" data-package-id="4">
+                        <span class="pkg-name">Double Flap</span>
+                        <span class="pkg-price">$799</span>
+                    </button>
+                </div>
+                <div class="bonus-section">
+                    <p class="bonus-text">💰 Milestone Bonuses:</p>
+                    <ul>
+                        <li>Score 10 → +$50</li>
+                        <li>Score 25 → +$125</li>
+                        <li>Score 50 → +$250</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         <div class="game-container">
             <canvas id="gameCanvas"></canvas>
             <div id="score">Score: 0</div>
